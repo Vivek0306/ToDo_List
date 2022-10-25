@@ -10,77 +10,86 @@
     <title>ToDo App</title>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container-fluid">
-          <span class="navbar-brand mb-0 h1">ToDo App</span>
-        </div>
-    </nav>
-    <!-- Enter task section -->
-    <div class="section">
-        <div class="container">
-            <div class="mx-auto pt-5" style="width: 50%; margin: 0 auto; text-align:center">
-                <h2>Enter your task to be done: </h2>
-                <form action="/add" method="POST">
-                    <div>
-                        <div class="input-group mb-3 col-xs-4">
-                            <span class="input-group-text" id="basic-addon1">TASKS</span>
-                            <input type="text" class="form-control" name="title" placeholder="Enter your task here " aria-describedby="basic-addon1">
-                            <button class="btn btn-primary" type="submit" id="button-addon2">Add</button>    
+    <div class="wrapper">
+
+        <nav class="navbar navbar-dark bg-primary">
+            <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">ToDo App</span>
+            </div>
+        </nav>
+        <!-- Enter task section -->
+        <div class="section">
+            <div class="container">
+                <div class="mx-auto pt-5" style="width: 50%; margin: 0 auto; text-align:center">
+                    <h2>Enter your task to be done: </h2>
+                    <form action="/add" method="POST">
+                        <div>
+                            <div class="input-group mb-3 col-xs-4">
+                                <span class="input-group-text" id="basic-addon1">TASKS</span>
+                                <input type="text" class="form-control" name="title" placeholder="Enter your task here " aria-describedby="basic-addon1">
+                                <button class="btn btn-primary" type="submit" id="button-addon2">Add</button>    
+                            </div>
+                            <br>
                         </div>
-                        <br>
-                    </div>
-                </form>
+                    </form>
+                </div>
+            </div>  
+        </div>
+        <!-- collapsible section -->
+        <div class="container">
+            <div class="mx-auto" style="margin: 0 auto; text-align:center;">
+                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsible" aria-expanded="false" aria-controls="collapsible">
+                    View Tasks&nbsp;&nbsp;&nbsp;<i class="bi bi-eye-fill"></i>
+                </button>
+            </div>
+            <div class="collapse" id="collapsible">
+                    <!-- task section -->
+                    <div class="container">
+                        <div class="row">
+                            {% for todo in todo_list %}
+                                <div class="col-md-4 pt-5 pb-2">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="card-title">{{ todo.id }}. {{ todo.title }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if todo.complete == False %}
+                                                <div class="alert alert-danger">
+                                                    <span><p class="card-text">Task Not Completed</p> <i class="bi bi-x-lg"></i></span> 
+                                                </div>
+                                            {% else %}
+                                                <div class="alert alert-success">
+                                                    <span><p class="card-text">Task Completed</p> <i class="bi bi-check-lg"></i></span>
+                                                </div>
+                                            {% endif %}
+                                            <div class="container">
+                                                <div class="row justify-content-evenly">
+                                                        <div class="col-md-4">
+                                                            <a href="/update/{{ todo.id }}" class="btn btn-success">Update</a>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <a href="/delete/{{ todo.id }}" class="btn btn-danger">Delete</a>
+                                                        </div>     
+                                                </div>        
+                                            </div>
+                        
+                                        </div>
+                                    </div>
+                                </div>        
+                            {% endfor %}
+                        </div>
+                    </div> 
             </div>
         </div>  
-    </div>
+        
+        <div class="push"></div>
 
-    <!-- collapsible section -->
-    <div class="container">
-        <div class="mx-auto" style="margin: 0 auto; text-align:center;">
-            <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsible" aria-expanded="false" aria-controls="collapsible">
-                View Tasks&nbsp;&nbsp;&nbsp;<i class="bi bi-eye-fill"></i>
-            </button>
-        </div>
-        <div class="collapse" id="collapsible">
-                <!-- task section -->
-                <div class="container">
-                    <div class="row">
-                        {% for todo in todo_list %}
-                            <div class="col-md-4 pt-5 pb-2">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title">{{ todo.id }}. {{ todo.title }}</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        {% if todo.complete == False %}
-                                            <div class="alert alert-danger">
-                                                <span><p class="card-text">Task Not Completed</p> <i class="bi bi-x-lg"></i></span> 
-                                            </div>
-                                        {% else %}
-                                            <div class="alert alert-success">
-                                                <span><p class="card-text">Task Completed</p> <i class="bi bi-check-lg"></i></span>
-                                            </div>
-                                        {% endif %}
-                                        <div class="container">
-                                            <div class="row justify-content-evenly">
-                                                    <div class="col-md-4">
-                                                        <a href="/update/{{ todo.id }}" class="btn btn-success">Update</a>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <a href="/delete/{{ todo.id }}" class="btn btn-danger">Delete</a>
-                                                    </div>     
-                                            </div>        
-                                        </div>
-                    
-                                    </div>
-                                </div>
-                            </div>        
-                        {% endfor %}
-                    </div>
-                </div> 
-        </div>
     </div>
-
+    <footer  class="text-center text-lg-start bg-light text-muted">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            Made with <i class="bi bi-heart-fill"></i> by Vivek
+        </div>
+    </footer>
        
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
