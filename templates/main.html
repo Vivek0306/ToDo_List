@@ -6,6 +6,11 @@
 
 
 {% block main %}
+        {% if session["uname"] %}
+            <h1>You are logged in as {{ session["uname"] }}</h1><a href="/logout">Log Out</a>
+        {% else %}
+            <h1>You aren't logged in</h1> <a href="/login">Log In</a>
+        {% endif %}
         <!-- Enter task section -->
         <div class="section">
             <div class="container">
@@ -38,7 +43,7 @@
                                 <div class="col-md-4 pt-5 pb-2">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5 class="card-title">{{ todo.id }}. {{ todo.title }}</h5>
+                                            <h5 class="card-title">{{ loop.index }}. {{ todo.title }}</h5>
                                         </div>
                                         <div class="card-body">
                                             {% if todo.complete == False %}
@@ -69,6 +74,5 @@
                     </div> 
             </div>
         </div>  
-        
         <div class="push"></div>
 {% endblock %}

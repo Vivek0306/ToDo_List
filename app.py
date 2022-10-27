@@ -1,4 +1,5 @@
-
+from pydoc import render_doc
+from click import password_option
 from flask import Flask, request, render_template, request, redirect, url_for, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
@@ -16,31 +17,72 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    uname = db.Column(db.String(50))
+    password = db.Column(db.String(50))
+    tasks = db.relationship('ToDo', backref='user')
+
 class ToDo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     complete = db.Column(db.Boolean)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
 
 @app.route("/")
 def index():
-    todo_list = ToDo.query.all()
-    return render_template('main.html', todo_list=todo_list)
+    # todo_list = ToDo.query.all()
+    # return render_template('main.html', todo_list=todo_list)
+    if not session.get("uname"):
+        return redirect("/login")
+    else:
+        user = User.query.filter_by(uname = session["uname"]).first()
+        todo_list = ToDo.query.filter_by(user_id = user.id)
+        return render_template('main.html', todo_list=todo_list)
 
-@app.route("/register")
-def register():
+@app.route("/login", methods=["GET", "POST"])
+def login():
     # email = request.form.get("email")
     # uname = request.form.get("uname")
     # password = request.form.get("password")
+    if request.method == "POST":
+        session["uname"] = request.form.get("uname")
+        password = request.form.get("password")
+        user = User.query.filter_by(uname = session["uname"]).first()
+        if user.password == password:
+            return redirect("/")
+        else:
+            return redirect('/login')
+
+    return render_template('login.html')
+
+@app.route("/register", methods=["GET","POST"])
+def register():
+    if request.method == "GET":
+        return render_template("register.html")
+    if request.method == "POST":
+        uname = request.form.get("uname")
+        password = request.form.get("password")
+        new_user = User(uname=uname, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect("/login")
     return render_template('register.html')
+
+@app.route("/logout")
+def logout():
+    session["uname"] = None
+    return redirect("/")
 
 @app.route("/add", methods=["POST"])
 def add():
+    user = User.query.filter_by(uname = session["uname"]).first()
     title = request.form.get("title")
-    new_todo = ToDo(title=title, complete=False)
+    new_todo = ToDo(title=title, complete=False, user_id = user.id)
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for("index"))
-
 
 @app.route("/update/<int:todo_id>")
 def update(todo_id):
