@@ -32,8 +32,6 @@ class ToDo(db.Model):
 
 @app.route("/")
 def index():
-    # todo_list = ToDo.query.all()
-    # return render_template('main.html', todo_list=todo_list)
     if not session.get("uname"):
         return redirect("/login")
     else:
@@ -43,17 +41,22 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    # email = request.form.get("email")
-    # uname = request.form.get("uname")
-    # password = request.form.get("password")
     if request.method == "POST":
-        session["uname"] = request.form.get("uname")
+        # session["uname"] = request.form.get("uname")
+        uname = request.form.get("uname")
         password = request.form.get("password")
-        user = User.query.filter_by(uname = session["uname"]).first()
-        if user.password == password:
-            return redirect("/")
+        # user = User.query.filter_by(uname = session["uname"]).first()
+        user = User.query.filter_by(uname = uname).first()
+        if user:
+            if user.password == password:
+                session["uname"] = uname
+                return redirect("/")
+            else:
+                error = "Invalid username or password"
+                return render_template('login.html', error=error)
         else:
-            return redirect('/login')
+            error = "Invalid username or password"
+            return render_template('login.html', error=error)
 
     return render_template('login.html')
 
@@ -64,10 +67,15 @@ def register():
     if request.method == "POST":
         uname = request.form.get("uname")
         password = request.form.get("password")
-        new_user = User(uname=uname, password=password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect("/login")
+        if uname and password:
+            new_user = User(uname=uname, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect("/login")
+        else:
+            error = "Please enter the username and password"
+            return render_template('register.html', error=error)
+
     return render_template('register.html')
 
 @app.route("/logout")

@@ -6,11 +6,6 @@
 
 
 {% block main %}
-        {% if session["uname"] %}
-            <h1>You are logged in as {{ session["uname"] }}</h1><a href="/logout">Log Out</a>
-        {% else %}
-            <h1>You aren't logged in</h1> <a href="/login">Log In</a>
-        {% endif %}
         <!-- Enter task section -->
         <div class="section">
             <div class="container">

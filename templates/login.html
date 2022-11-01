@@ -5,19 +5,25 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Login page</h1>
     <div class="container">
         <div class="mx-auto pt-5" style="width: 50%;">
+            <h3>Login</h3>
+
             <form action="/login" method="post">
                 <div class="mb-3">
-                    <label for="inputUser" class="form-label">Username</label>
+                    <label for="inputUser" class="form-label lead">Username</label>
                     <input type="text" class="form-control" id="inputUser" aria-describedby="emailHelp" name="uname">
                 </div>
                 <div class="mb-3">
-                    <label for="inputPassword" class="form-label">Password</label>
+                    <label for="inputPassword" class="form-label lead">Password</label>
                     <input type="password" class="form-control" id="inputPassword" name="password">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                {% if error %}
+                    <span style="color: red;">{{ error }}</span><br>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                {% else %}
+                    <button type="submit" class="btn btn-primary">Login</button>
+                {% endif %}
             </form>
             Not registered? <a href="/register">Register here</a>
         </div>
