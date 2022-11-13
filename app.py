@@ -3,6 +3,7 @@ from click import password_option
 from flask import Flask, request, render_template, request, redirect, url_for, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import false
 
 
@@ -48,7 +49,7 @@ def login():
         # user = User.query.filter_by(uname = session["uname"]).first()
         user = User.query.filter_by(uname = uname).first()
         if user:
-            if user.password == password:
+            if check_password_hash(user.password, password):
                 session["uname"] = uname
                 return redirect("/")
             else:
@@ -68,7 +69,8 @@ def register():
         uname = request.form.get("uname")
         password = request.form.get("password")
         if uname and password:
-            new_user = User(uname=uname, password=password)
+            hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
+            new_user = User(uname=uname, password=hash)
             db.session.add(new_user)
             db.session.commit()
             return redirect("/login")
