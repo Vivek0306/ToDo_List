@@ -50,6 +50,7 @@ def login():
         user = User.query.filter_by(uname = uname).first()
         if user:
             if check_password_hash(user.password, password):
+                session.permanent = False
                 session["uname"] = uname
                 return redirect("/")
             else:
@@ -68,14 +69,18 @@ def register():
     if request.method == "POST":
         uname = request.form.get("uname")
         password = request.form.get("password")
-        if uname and password:
-            hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
-            new_user = User(uname=uname, password=hash)
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect("/login")
+        if not User.query.filter_by(uname=uname).first():
+            if uname and password:
+                hash = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
+                new_user = User(uname=uname, password=hash)
+                db.session.add(new_user)
+                db.session.commit()
+                return redirect("/login")
+            else:
+                error = "Please enter the username and password"
+                return render_template('register.html', error=error)
         else:
-            error = "Please enter the username and password"
+            error = "Username already exists"
             return render_template('register.html', error=error)
 
     return render_template('register.html')
